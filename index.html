@@ -268,7 +268,7 @@
             renderSpecificationMenu(matchedItems);
         };
 
-        function renderSpecificationMenu(matchedItems) {
+            function renderSpecificationMenu(matchedItems) {
             specMenuHtml.innerHTML = "";
             specMenuHtml.style.display = "none";
 
@@ -280,35 +280,30 @@
                 pipMenu.style.display = "none";
             }
 
-            if (matchedItems.length === 1) {
-                sendCodeToPython(matchedItems[0]);
-            } else {
-                prodNameHtml.innerText = "請選擇規格";
-                specMenuHtml.style.display = "flex";
+            prodNameHtml.innerText = "請選擇規格";
+            specMenuHtml.style.display = "flex";
 
-                if (pipWin && pipName && pipMenu) {
-                    pipName.innerText = "請選擇規格";
-                    pipMenu.style.display = "grid";
-                }
-
-                matchedItems.forEach(item => {
-                    const btn = document.createElement('button');
-                    btn.className = 'spec-btn';
-                    btn.innerText = item.name;
-                    btn.onclick = () => { sendCodeToPython(item); specMenuHtml.style.display = "none"; };
-                    specMenuHtml.appendChild(btn);
-
-                    if (pipWin && pipMenu) {
-                        const pipBtn = pipWin.document.createElement('button');
-                        pipBtn.className = 's-btn';
-                        pipBtn.innerText = item.name;
-                        pipBtn.onclick = () => { sendCodeToPython(item); pipMenu.style.display = "none"; };
-                        pipMenu.appendChild(pipBtn);
-                    }
-                });
+            if (pipWin && pipName && pipMenu) {
+                pipName.innerText = "請選擇規格";
+                pipMenu.style.display = "grid";
             }
-        }
 
+            matchedItems.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'spec-btn';
+                btn.innerText = item.name;
+                btn.onclick = () => { sendCodeToPython(item); specMenuHtml.style.display = "none"; };
+                specMenuHtml.appendChild(btn);
+
+                if (pipWin && pipMenu) {
+                    const pipBtn = pipWin.document.createElement('button');
+                    pipBtn.className = 's-btn';
+                    pipBtn.innerText = item.name;
+                    pipBtn.onclick = () => { sendCodeToPython(item); pipMenu.style.display = "none"; };
+                    pipMenu.appendChild(pipBtn);
+                }
+            });
+        }
         function sendCodeToPython(item) {
             if (isScanCoolingDown) return;
 
