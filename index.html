@@ -268,7 +268,7 @@
             renderSpecificationMenu(matchedItems);
         };
 
-            function renderSpecificationMenu(matchedItems) {
+                    function renderSpecificationMenu(matchedItems) {
             specMenuHtml.innerHTML = "";
             specMenuHtml.style.display = "none";
 
@@ -292,17 +292,49 @@
                 const btn = document.createElement('button');
                 btn.className = 'spec-btn';
                 btn.innerText = item.name;
-                btn.onclick = () => { sendCodeToPython(item); specMenuHtml.style.display = "none"; };
+                btn.onclick = (event) => {
+                    sendCodeToPython(item, event);
+                    specMenuHtml.style.display = "none";
+                };
                 specMenuHtml.appendChild(btn);
 
                 if (pipWin && pipMenu) {
                     const pipBtn = pipWin.document.createElement('button');
                     pipBtn.className = 's-btn';
                     pipBtn.innerText = item.name;
-                    pipBtn.onclick = () => { sendCodeToPython(item); pipMenu.style.display = "none"; };
+                    pipBtn.onclick = (event) => {
+                        sendCodeToPython(item, event);
+                        pipMenu.style.display = "none";
+                    };
                     pipMenu.appendChild(pipBtn);
                 }
             });
+        }
+
+        function sendCodeToPython(item, clickEvent) {
+            if (!clickEvent || clickEvent.isTrusted !== true) return;
+            if (isScanCoolingDown) return;
+
+            prodNameHtml.innerText = item.name + " 🚀發射中";
+            if (pipWin) pipWin.document.getElementById('p-name').innerText = item.name + " 🚀發射中";
+
+            isScanCoolingDown = true;
+
+            let finalCode = item.barcode ? item.barcode.toString().trim() : "";
+            let encodedCode = encodeURIComponent(finalCode);
+
+            fetch(`http://127.0.0.1:5000/scan?code=${encodedCode}`)
+                .then(() => {
+                    prodNameHtml.innerText = item.name + " 🚀已灌入";
+                    if (pipWin) pipWin.document.getElementById('p-name').innerText = item.name + " 🚀已灌入";
+                })
+                .catch(() => {
+                    prodNameHtml.innerText = item.name + " ❌失敗(未開Python)";
+                    if (pipWin) pipWin.document.getElementById('p-name').innerText = item.name + " ❌失敗(未開Python)";
+                })
+                .finally(() => {
+                    setTimeout(() => { isScanCoolingDown = false; }, 1200);
+                });
         }
         function sendCodeToPython(item) {
             if (isScanCoolingDown) return;
